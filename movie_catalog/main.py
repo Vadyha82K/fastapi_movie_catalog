@@ -1,13 +1,20 @@
+from typing import Annotated
+
 from fastapi import (
     FastAPI,
     Request,
+    Depends,
+    HTTPException,
+    status,
 )
+
+from schemas.movie_description import MovieDescription
 
 app = FastAPI(title="Movie Catalog")
 
 
 @app.get("/")
-def read_root(request: Request, name: str = "Guest") -> dict:
+def read_root(request: Request, name: str = "Guest"):
     docs_url = request.url.replace(
         path="/docs",
         query="",
@@ -15,5 +22,99 @@ def read_root(request: Request, name: str = "Guest") -> dict:
 
     return {
         "message": f"Hello {name}!",
-        "docs": docs_url,
+        "docs": str(docs_url),
     }
+
+
+MOVIES_DESCRIPTION = [
+    MovieDescription(
+        id=1,
+        title="Крестный отец",
+        description="""
+        Криминальная сага, повествующая о нью-йоркской сицилийской мафиозной семье Корлеоне.
+        Фильм охватывает период 1945-1955 годов.
+        Глава семьи, Дон Вито Корлеоне, выдаёт замуж свою дочь. В это время со Второй мировой войны возвращается его 
+        любимый сын Майкл. Майкл, герой войны, гордость семьи, не выражает желания заняться жестоким семейным бизнесом. 
+        Дон Корлеоне ведёт дела по старым правилам, но наступают иные времена, и появляются люди, желающие изменить 
+        сложившиеся порядки. На Дона Корлеоне совершается покушение.
+        """,
+        genre=["Драма", "Криминал"],
+        release_year=1972,
+    ),
+    MovieDescription(
+        id=2,
+        title="Белые росы",
+        description="""
+        Ветеран труда и трех войн, уважаемый человек в деревне Белые росы – Федор Ходас уже давно овдовел и имеет трех 
+        взрослых сыновей. Старший чрезмерно расчетлив, младший чересчур весел. Средний уехал на Курилы и каков он теперь
+        отцу неведомо. Но за всех у старика душа болит, особенно за младшего балагура.
+        """,
+        genre=["Драма", "Мелодрама", "Комедия"],
+        release_year=1983,
+    ),
+    MovieDescription(
+        id=3,
+        title="Игра престолов (сериал)",
+        description="""
+        К концу подходит время благоденствия, и лето, длившееся почти десятилетие, угасает. Вокруг средоточия власти 
+        Семи королевств, Железного трона, зреет заговор, и в это непростое время король решает искать поддержки у друга 
+        юности Эддарда Старка. В мире, где все — от короля до наемника — рвутся к власти, плетут интриги и готовы 
+        вонзить нож в спину, есть место и благородству, состраданию и любви. Между тем никто не замечает пробуждение 
+        тьмы из легенд далеко на Севере — и лишь Стена защищает живых к югу от нее.
+        """,
+        genre=["Драма", "Фэнтези", "Боевик", "Мелодрама", "Приключения"],
+        release_year=2011,
+    ),
+    MovieDescription(
+        id=4,
+        title="Остров проклятых",
+        description="""
+        Два американских судебных пристава отправляются на один из островов в штате Массачусетс, чтобы расследовать 
+        исчезновение пациентки клиники для умалишенных преступников. При проведении расследования им придется 
+        столкнуться с паутиной лжи, обрушившимся ураганом и смертельным бунтом обитателей клиники.
+        """,
+        genre=["Драма", "Триллер", "Детектив"],
+        release_year=2009,
+    ),
+    MovieDescription(
+        id=5,
+        title="Интерстеллар",
+        description="""
+        Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив 
+        исследователей и учёных отправляется сквозь червоточину (которая предположительно соединяет области 
+        пространства-времени через большое расстояние) в путешествие, чтобы превзойти прежние ограничения для 
+        космических путешествий человека и найти планету с подходящими для человечества условиями.
+        """,
+        genre=["Драма", "Фантастика", "Приключения"],
+        release_year=2014,
+    ),
+]
+
+
+@app.get(
+    "/movies/",
+    response_model=list[MovieDescription],
+)
+def get_list_movies():
+    return MOVIES_DESCRIPTION
+
+
+def prefetch_movie(movie_id: int) -> MovieDescription:
+    movie: MovieDescription | None = next(
+        (movie for movie in MOVIES_DESCRIPTION if movie.id == movie_id),
+        None,
+    )
+    if movie:
+        return movie
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Movie {movie_id} not found",
+    )
+
+
+@app.get("/movies/{movie_id}")
+def get_movie_description(
+    movie: Annotated[MovieDescription, Depends(prefetch_movie)],
+) -> MovieDescription:
+    return movie
