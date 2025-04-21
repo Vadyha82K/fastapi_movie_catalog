@@ -1,16 +1,8 @@
-from typing import Annotated
-
 from fastapi import (
-    FastAPI,
     Request,
-    Depends,
 )
 
-from api.api_v1.movies.crud import MOVIES_DESCRIPTION
-from api.api_v1.movies.dependencies import prefetch_movie
-from schemas.movie_description import MovieDescription
-
-app = FastAPI(title="Movie Catalog")
+from api.api_v1.movies.views import app
 
 
 @app.get("/")
@@ -26,19 +18,3 @@ def read_root(request: Request, name: str = "Guest"):
     }
 
 
-@app.get(
-    "/movies/",
-    response_model=list[MovieDescription],
-)
-def get_list_movies():
-    return MOVIES_DESCRIPTION
-
-
-@app.get(
-    "/movies/{movie_id}",
-    response_model=MovieDescription,
-)
-def get_movie_description(
-    movie: Annotated[MovieDescription, Depends(prefetch_movie)],
-) -> MovieDescription:
-    return movie
