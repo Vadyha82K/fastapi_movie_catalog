@@ -113,7 +113,10 @@ def prefetch_movie(movie_id: int) -> MovieDescription:
     )
 
 
-@app.get("/movies/{movie_id}")
+@app.get(
+    "/movies/{movie_id}",
+    response_model=MovieDescription,
+)
 def get_movie_description(
     movie: Annotated[MovieDescription, Depends(prefetch_movie)],
 ) -> MovieDescription:
