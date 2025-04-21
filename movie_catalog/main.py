@@ -4,11 +4,10 @@ from fastapi import (
     FastAPI,
     Request,
     Depends,
-    HTTPException,
-    status,
 )
 
 from api.api_v1.movies.crud import MOVIES_DESCRIPTION
+from api.api_v1.movies.dependencies import prefetch_movie
 from schemas.movie_description import MovieDescription
 
 app = FastAPI(title="Movie Catalog")
@@ -33,20 +32,6 @@ def read_root(request: Request, name: str = "Guest"):
 )
 def get_list_movies():
     return MOVIES_DESCRIPTION
-
-
-def prefetch_movie(movie_id: int) -> MovieDescription:
-    movie: MovieDescription | None = next(
-        (movie for movie in MOVIES_DESCRIPTION if movie.id == movie_id),
-        None,
-    )
-    if movie:
-        return movie
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Movie {movie_id} not found",
-    )
 
 
 @app.get(
