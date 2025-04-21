@@ -1,8 +1,15 @@
 from fastapi import (
+    FastAPI,
     Request,
 )
 
-from api.api_v1.movies.views import app
+from api import router as api_router
+
+
+app = FastAPI(
+    title="Movie Catalog",
+)
+app.include_router(api_router)
 
 
 @app.get("/")
@@ -16,5 +23,3 @@ def read_root(request: Request, name: str = "Guest"):
         "message": f"Hello {name}!",
         "docs": str(docs_url),
     }
-
-
