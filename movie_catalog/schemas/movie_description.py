@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class MovieDescriptionBase(BaseModel):
-    id: int
+    slug: str
     title: str
     description: str
     genre: list[str]
@@ -18,7 +18,7 @@ class MovieDescriptionCreate(MovieDescriptionBase):
     Модель создания описания фильмов
     """
 
-    id: int = random.randint(1, 10000)
+    slug: Annotated[str, Form()]
     title: Annotated[str, Form()]
     description: Annotated[str, Form()]
     genre: Annotated[list[str], Form()]

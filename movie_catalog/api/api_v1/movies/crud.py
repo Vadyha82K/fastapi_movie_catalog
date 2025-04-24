@@ -3,7 +3,7 @@ from schemas.movie_description import MovieDescription
 
 MOVIES_DESCRIPTION = [
     MovieDescription(
-        id=1,
+        slug="krestnyy_otec",
         title="Крестный отец",
         description="""
         Криминальная сага, повествующая о нью-йоркской сицилийской мафиозной семье Корлеоне.
@@ -17,7 +17,7 @@ MOVIES_DESCRIPTION = [
         release_year=1972,
     ),
     MovieDescription(
-        id=2,
+        slug="belye_rosy",
         title="Белые росы",
         description="""
         Ветеран труда и трех войн, уважаемый человек в деревне Белые росы – Федор Ходас уже давно овдовел и имеет трех 
@@ -28,7 +28,7 @@ MOVIES_DESCRIPTION = [
         release_year=1983,
     ),
     MovieDescription(
-        id=3,
+        slug="igra_prestolov",
         title="Игра престолов (сериал)",
         description="""
         К концу подходит время благоденствия, и лето, длившееся почти десятилетие, угасает. Вокруг средоточия власти 
@@ -41,7 +41,7 @@ MOVIES_DESCRIPTION = [
         release_year=2011,
     ),
     MovieDescription(
-        id=4,
+        slug="ostrov_proklyatyh",
         title="Остров проклятых",
         description="""
         Два американских судебных пристава отправляются на один из островов в штате Массачусетс, чтобы расследовать 
@@ -52,7 +52,7 @@ MOVIES_DESCRIPTION = [
         release_year=2009,
     ),
     MovieDescription(
-        id=5,
+        slug="interstellar",
         title="Интерстеллар",
         description="""
         Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив 
