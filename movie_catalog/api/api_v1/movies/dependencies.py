@@ -6,10 +6,8 @@ from schemas.movie_description import MovieDescription
 
 
 def prefetch_movie(movie_slug: str) -> MovieDescription:
-    movie: MovieDescription | None = next(
-        (movie for movie in storage if movie.slug == movie_slug),
-        None,
-    )
+    movie: MovieDescription | None = storage.get_movies_by_slug(slug=movie_slug)
+
     if movie:
         return movie
 
