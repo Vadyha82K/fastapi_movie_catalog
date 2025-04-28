@@ -39,7 +39,7 @@ def create_movie(
 
 
 @router.get(
-    "/{movie_slug}",
+    "/{slug}",
     response_model=MovieDescription,
 )
 def get_movie_description(
