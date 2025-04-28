@@ -1,7 +1,11 @@
 from pydantic import BaseModel
 from fastapi import status, HTTPException
 
-from schemas.movie_description import MovieDescription, MovieDescriptionCreate
+from schemas.movie_description import (
+    MovieDescription,
+    MovieDescriptionCreate,
+    MovieDescriptionUpdate,
+)
 
 
 class MoviesStorage(BaseModel):
@@ -24,6 +28,16 @@ class MoviesStorage(BaseModel):
             **movie_in.model_dump(),
         )
         self.slug_to_movies[movie.slug] = movie
+
+        return movie
+
+    def update(
+        self,
+        movie: MovieDescription,
+        movie_in: MovieDescriptionUpdate,
+    ):
+        for field_name, value in movie_in:
+            setattr(movie, field_name, value)
 
         return movie
 
