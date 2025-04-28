@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 
 class MovieDescriptionBase(BaseModel):
-    slug: str
     title: str
     description: str
     genre: list[str]
@@ -19,6 +18,13 @@ class MovieDescriptionCreate(MovieDescriptionBase):
     """
 
     slug: Annotated[str, Form()]
+
+
+class MovieDescriptionUpdate(BaseModel):
+    """
+    Модель обновления описания фильмов
+    """
+
     title: Annotated[str, Form()]
     description: Annotated[str, Form()]
     genre: Annotated[list[str], Form()]
@@ -29,3 +35,5 @@ class MovieDescription(MovieDescriptionBase):
     """
     Модель описания фильмов
     """
+
+    slug: str
