@@ -8,6 +8,7 @@ from api.api_v1.movies.dependencies import prefetch_movie
 from schemas.movie_description import (
     MovieDescription,
     MovieDescriptionUpdate,
+    MovieDescriptionPartialUpdate,
 )
 
 MovieDescriptionBySlug = Annotated[
@@ -51,6 +52,20 @@ def update(
     movie_in: MovieDescriptionUpdate,
 ):
     return storage.update(
+        movie=movie,
+        movie_in=movie_in,
+    )
+
+
+@router.patch(
+    "/",
+    response_model=MovieDescription,
+)
+def update_partial(
+    movie: MovieDescriptionBySlug,
+    movie_in: MovieDescriptionPartialUpdate,
+) -> MovieDescription:
+    return storage.update_partial(
         movie=movie,
         movie_in=movie_in,
     )

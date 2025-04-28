@@ -31,6 +31,17 @@ class MovieDescriptionUpdate(BaseModel):
     release_year: Annotated[int, Form()]
 
 
+class MovieDescriptionPartialUpdate(MovieDescriptionBase):
+    """
+    Модель частичного обновления описания фильмов
+    """
+
+    title: str | None = None
+    description: str | None = None
+    genre: list[str] | None = None
+    release_year: int | None = None
+
+
 class MovieDescription(MovieDescriptionBase):
     """
     Модель описания фильмов
