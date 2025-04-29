@@ -1,4 +1,3 @@
-import random
 from typing import Annotated
 
 from fastapi import Form
@@ -42,9 +41,19 @@ class MovieDescriptionPartialUpdate(MovieDescriptionBase):
     release_year: int | None = None
 
 
+class MovieDescriptionRead(MovieDescriptionBase):
+    """
+    Модель для чтения данных описания фильмов
+    """
+
+    slug: str
+
+
 class MovieDescription(MovieDescriptionBase):
     """
     Модель описания фильмов
     """
 
     slug: str
+    notes: str | None = None
+    visits: int | None = None
