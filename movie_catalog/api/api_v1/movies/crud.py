@@ -30,6 +30,18 @@ class MoviesStorage(BaseModel):
             return MoviesStorage()
         return cls.model_validate_json(MOVIES_STORAGE_FILEPATH.read_text())
 
+    def init_storage_from_state(self) -> None:
+        try:
+            data = MoviesStorage.from_state()
+            log.warning("Чтение данных с диска прошло успешно.")
+        except ValidationError:
+            self.save_state()
+            log.warning("Файл был перезаписан, из-за невозможности прочитать данные.")
+            return
+        self.slug_to_movies.update(
+            data.slug_to_movies,
+        )
+
     def get_list_movies(self) -> list[MovieDescription]:
         return list(self.slug_to_movies.values())
 
@@ -79,10 +91,4 @@ class MoviesStorage(BaseModel):
         self.delete_movies(slug=movie.slug)
 
 
-try:
-    storage = MoviesStorage.from_state()
-    log.warning("Чтение данных с диска прошло успешно.")
-except ValidationError:
-    storage = MoviesStorage()
-    storage.save_state()
-    log.warning("Файл был перезаписан, из-за невозможности прочитать данные.")
+storage = MoviesStorage()
