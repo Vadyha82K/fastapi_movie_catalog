@@ -1,6 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends, APIRouter
+from fastapi import (
+    Depends,
+    APIRouter,
+    BackgroundTasks,
+)
 from starlette import status
 
 from api.api_v1.movies.crud import storage
@@ -51,7 +55,9 @@ def get_movie_description(
 def update(
     movie: MovieDescriptionBySlug,
     movie_in: MovieDescriptionUpdate,
+    background_tasks: BackgroundTasks,
 ):
+    background_tasks.add_task(storage.save_state)
     return storage.update(
         movie=movie,
         movie_in=movie_in,
@@ -65,7 +71,9 @@ def update(
 def update_partial(
     movie: MovieDescriptionBySlug,
     movie_in: MovieDescriptionPartialUpdate,
+    background_tasks: BackgroundTasks,
 ) -> MovieDescription:
+    background_tasks.add_task(storage.save_state)
     return storage.update_partial(
         movie=movie,
         movie_in=movie_in,
@@ -78,5 +86,7 @@ def update_partial(
 )
 def delete_movie(
     movie: MovieDescriptionBySlug,
+    background_tasks: BackgroundTasks,
 ) -> None:
+    background_tasks.add_task(storage.save_state)
     storage.delete(movie=movie)
