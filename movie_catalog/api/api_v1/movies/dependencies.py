@@ -1,13 +1,16 @@
 import logging
+from typing import Annotated
 
 from fastapi import (
     HTTPException,
     BackgroundTasks,
     status,
     Request,
+    Query,
 )
 
 from api.api_v1.movies.crud import storage
+from core.config import API_TOKENS
 from schemas.movie_description import MovieDescription
 
 
@@ -44,3 +47,20 @@ def save_storage_state(
     if request.method in UNSAFE_METHODS:
         log.info("Добавил background tasks в save storage")
         background_tasks.add_task(storage.save_state)
+
+
+def api_token_required_for_unsafe_methods(
+    request: Request,
+    api_token: Annotated[
+        str,
+        Query(),
+    ] = "",
+):
+    if request.method not in UNSAFE_METHODS:
+        return
+
+    if api_token not in API_TOKENS:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API Token",
+        )
