@@ -18,6 +18,6 @@ API_TOKENS = frozenset(
 )
 
 USERS_DB = {
-    "bo": "qwerty",
-    "sa": "password",
+    "bob": "qwerty",
+    "sam": "password",
 }
