@@ -68,29 +68,6 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
-# def api_token_required_for_unsafe_methods(
-#     request: Request,
-#     api_token: Annotated[
-#         HTTPAuthorizationCredentials | None,
-#         Depends(static_api_token),
-#     ] = None,
-# ):
-#     if request.method not in UNSAFE_METHODS:
-#         return
-#
-#     if not api_token:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Отсутствует API Token",
-#         )
-#
-#     if api_token.credentials not in API_TOKENS:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Не верный API Token",
-#         )
-
-
 def user_basic_auth_required(
     request: Request,
     credentials: Annotated[
