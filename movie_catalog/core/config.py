@@ -16,3 +16,8 @@ API_TOKENS = frozenset(
         "qbVvtDs3TG3W5zGJwc3YeQ",
     }
 )
+
+USERS_DB = {
+    "bo": "qwerty",
+    "sa": "password",
+}

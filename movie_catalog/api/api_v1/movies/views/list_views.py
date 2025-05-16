@@ -7,7 +7,7 @@ from fastapi import (
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import (
     save_storage_state,
-    api_token_required_for_unsafe_methods,
+    user_basic_auth_required,
 )
 from schemas.movie_description import (
     MovieDescription,
@@ -19,8 +19,8 @@ router = APIRouter(
     prefix="/movies",
     tags=["movies"],
     dependencies=[
+        Depends(user_basic_auth_required),
         Depends(save_storage_state),
-        Depends(api_token_required_for_unsafe_methods),
     ],
     responses={
         status.HTTP_401_UNAUTHORIZED: {
