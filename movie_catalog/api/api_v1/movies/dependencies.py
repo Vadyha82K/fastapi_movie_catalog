@@ -14,6 +14,7 @@ from fastapi.security import (
     HTTPBasic,
     HTTPBasicCredentials,
 )
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 from api.api_v1.movies.crud import storage
 from core.config import API_TOKENS, USERS_DB
@@ -68,20 +69,11 @@ def save_storage_state(
         background_tasks.add_task(storage.save_state)
 
 
-def user_basic_auth_required(
-    request: Request,
-    credentials: Annotated[
-        HTTPBasicCredentials | None,
-        Depends(user_basic_auth),
-    ],
-) -> None:
-
-    if request.method not in UNSAFE_METHODS:
-        return
-
+def validate_basic_auth(
+    credentials: HTTPBasicCredentials,
+):
     if (
-        credentials
-        and credentials.username in USERS_DB
+        credentials.username in USERS_DB
         and USERS_DB[credentials.username] == credentials.password
     ):
         return
@@ -90,4 +82,41 @@ def user_basic_auth_required(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="User credentials required. Invalid username or password.",
         headers={"WWW-Authenticate": "Basic"},
+    )
+
+
+def validate_api_token(
+    api_token: HTTPAuthorizationCredentials,
+):
+    if api_token.credentials not in API_TOKENS:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API token",
+        )
+
+
+def user_basic_auth_or_api_token_required_for_unsafe_methods(
+    request: Request,
+    credentials: Annotated[
+        HTTPBasicCredentials | None,
+        Depends(user_basic_auth),
+    ],
+    api_token: Annotated[
+        HTTPAuthorizationCredentials | None,
+        Depends(static_api_token),
+    ],
+) -> None:
+
+    if request.method not in UNSAFE_METHODS:
+        return
+
+    if credentials:
+        return validate_basic_auth(credentials=credentials)
+
+    if api_token:
+        return validate_api_token(api_token=api_token)
+
+    raise HTTPException(
+        status_code=HTTP_401_UNAUTHORIZED,
+        detail="Basic auth or API token required",
     )
