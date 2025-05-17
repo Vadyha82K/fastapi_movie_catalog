@@ -21,3 +21,7 @@ USERS_DB = {
     "bob": "qwerty",
     "sam": "password",
 }
+
+REDIS_HOST = "localhost"
+REDIS_PORT = 6372
+REDIS_DB = 0
