@@ -17,7 +17,8 @@ from fastapi.security import (
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from api.api_v1.movies.crud import storage
-from core.config import API_TOKENS, USERS_DB
+from api.api_v1.movies.my_redis import redis_tokens
+from core.config import USERS_DB, REDIS_TOKENS_SET_NAME
 from schemas.movie_description import MovieDescription
 
 
@@ -88,11 +89,16 @@ def validate_basic_auth(
 def validate_api_token(
     api_token: HTTPAuthorizationCredentials,
 ):
-    if api_token.credentials not in API_TOKENS:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API token",
-        )
+    if redis_tokens.sismember(
+        REDIS_TOKENS_SET_NAME,
+        api_token.credentials,
+    ):
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API token",
+    )
 
 
 def user_basic_auth_or_api_token_required_for_unsafe_methods(

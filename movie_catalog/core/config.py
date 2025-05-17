@@ -10,13 +10,6 @@ LOG_FORMAT: str = (
 )
 
 
-API_TOKENS = frozenset(
-    {
-        "Q6A0JpXQWAgJQAwW__rTKA",
-        "qbVvtDs3TG3W5zGJwc3YeQ",
-    }
-)
-
 USERS_DB = {
     "bob": "qwerty",
     "sam": "password",
@@ -25,3 +18,6 @@ USERS_DB = {
 REDIS_HOST = "localhost"
 REDIS_PORT = 6372
 REDIS_DB = 0
+REDIS_DB_TOKENS = 1
+
+REDIS_TOKENS_SET_NAME = "tokens"
