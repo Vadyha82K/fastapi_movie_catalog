@@ -1,10 +1,95 @@
+import secrets
+from abc import (
+    ABC,
+    abstractmethod,
+)
+
 from redis import Redis
 
 from core import config
 
-redis_tokens = Redis(
+
+class AbstractTokensHelper(ABC):
+    @abstractmethod
+    def token_exists(
+        self,
+        token: str,
+    ) -> bool:
+        """
+        Проверяет - существует ли токен
+
+        :param token: str
+        :return: bool
+        """
+
+    @abstractmethod
+    def add_token_in_storage(
+        self,
+        token: str,
+    ) -> None:
+        """
+        Добавляет токен в хранилище
+
+        :param token: str
+        :return: None
+        """
+
+    @classmethod
+    def generate_token(cls) -> str:
+        """
+        Генерирует токен
+
+        :return: str
+        """
+        return secrets.token_urlsafe(16)
+
+    def generate_and_save_token(self) -> str:
+        token = self.generate_token()
+        self.add_token_in_storage(token=token)
+        return token
+
+
+class RedisTokensHelper(AbstractTokensHelper):
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        db: int,
+        tokens_set_name: str,
+    ):
+        self.redis = Redis(
+            host=host,
+            port=port,
+            db=db,
+            decode_responses=True,
+        )
+        self.tokens_set = tokens_set_name
+
+    def token_exists(
+        self,
+        token: str,
+    ) -> bool:
+        return bool(
+            self.redis.sismember(
+                self.tokens_set,
+                token,
+            )
+        )
+
+    def add_token_in_storage(
+        self,
+        token: str,
+    ) -> None:
+        self.redis.sadd(
+            self.tokens_set,
+            token,
+        )
+
+
+redis_tokens = RedisTokensHelper(
     host=config.REDIS_HOST,
     port=config.REDIS_PORT,
     db=config.REDIS_DB_TOKENS,
-    decode_responses=True,
+    tokens_set_name=config.REDIS_TOKENS_SET_NAME,
 )
