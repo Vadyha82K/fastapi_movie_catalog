@@ -17,8 +17,10 @@ from fastapi.security import (
 from starlette.status import HTTP_401_UNAUTHORIZED
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.my_redis import redis_tokens
-from core.config import USERS_DB, REDIS_TOKENS_SET_NAME
+from api.api_v1.auth.services import (
+    redis_tokens,
+    redis_users,
+)
 from schemas.movie_description import MovieDescription
 
 
@@ -73,9 +75,9 @@ def save_storage_state(
 def validate_basic_auth(
     credentials: HTTPBasicCredentials,
 ):
-    if (
-        credentials.username in USERS_DB
-        and USERS_DB[credentials.username] == credentials.password
+    if redis_users.validate_user_password(
+        username=credentials.username,
+        password=credentials.password,
     ):
         return
 
