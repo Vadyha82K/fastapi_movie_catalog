@@ -5,7 +5,9 @@ from pydantic import (
     ValidationError,
 )
 from fastapi import status, HTTPException
+from redis import Redis
 
+from core import config
 from core.config import MOVIES_STORAGE_FILEPATH
 from schemas.movie_description import (
     MovieDescription,
@@ -15,6 +17,13 @@ from schemas.movie_description import (
 )
 
 log = logging.getLogger(__name__)
+
+redis = Redis(
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB_MOVIES,
+    decode_responses=True,
+)
 
 
 class MoviesStorage(BaseModel):
@@ -58,7 +67,11 @@ class MoviesStorage(BaseModel):
         movie = MovieDescription(
             **movie_in.model_dump(),
         )
-        self.slug_to_movies[movie.slug] = movie
+        redis.hset(
+            name=config.REDIS_MOVIES_HASH_NAME,
+            key=movie.slug,
+            value=movie.model_dump_json(),
+        )
         log.info("Создана новая запись с фильмом %s", movie)
         return movie
 
