@@ -61,17 +61,6 @@ def prefetch_movie(movie_slug: str) -> MovieDescription:
     )
 
 
-def save_storage_state(
-    background_tasks: BackgroundTasks,
-    request: Request,
-):
-    log.info("Методом запроса является %r", request.method)
-    yield
-    if request.method in UNSAFE_METHODS:
-        log.info("Добавил background tasks в save storage")
-        background_tasks.add_task(storage.save_state)
-
-
 def validate_basic_auth(
     credentials: HTTPBasicCredentials,
 ):

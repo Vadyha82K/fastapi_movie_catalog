@@ -1,13 +1,9 @@
 import logging
 
-from pydantic import (
-    BaseModel,
-    ValidationError,
-)
+from pydantic import BaseModel
 from redis import Redis
 
 from core import config
-from core.config import MOVIES_STORAGE_FILEPATH
 from schemas.movie_description import (
     MovieDescription,
     MovieDescriptionCreate,
@@ -26,29 +22,6 @@ redis = Redis(
 
 
 class MoviesStorage(BaseModel):
-    slug_to_movies: dict[str, MovieDescription] = {}
-
-    def save_state(self) -> None:
-        MOVIES_STORAGE_FILEPATH.write_text(self.model_dump_json(indent=2))
-        log.info("Запись успешно сохранена.")
-
-    @classmethod
-    def from_state(cls) -> "MoviesStorage":
-        if not MOVIES_STORAGE_FILEPATH.exists():
-            return MoviesStorage()
-        return cls.model_validate_json(MOVIES_STORAGE_FILEPATH.read_text())
-
-    def init_storage_from_state(self) -> None:
-        try:
-            data = MoviesStorage.from_state()
-            log.warning("Чтение данных с диска прошло успешно.")
-        except ValidationError:
-            self.save_state()
-            log.warning("Файл был перезаписан, из-за невозможности прочитать данные.")
-            return
-        self.slug_to_movies.update(
-            data.slug_to_movies,
-        )
 
     @staticmethod
     def get_list_movies() -> list[MovieDescription]:
