@@ -4,7 +4,6 @@ from pydantic import (
     BaseModel,
     ValidationError,
 )
-from fastapi import status, HTTPException
 from redis import Redis
 
 from core import config
@@ -51,7 +50,8 @@ class MoviesStorage(BaseModel):
             data.slug_to_movies,
         )
 
-    def get_list_movies(self) -> list[MovieDescription]:
+    @staticmethod
+    def get_list_movies() -> list[MovieDescription]:
         return [
             MovieDescription.model_validate_json(value)
             for value in redis.hvals(name=config.REDIS_MOVIES_HASH_NAME)
@@ -68,15 +68,19 @@ class MoviesStorage(BaseModel):
             return movie
 
     @staticmethod
-    def create_movies(movie_in: MovieDescriptionCreate) -> MovieDescription:
-        movie = MovieDescription(
-            **movie_in.model_dump(),
-        )
+    def save_movies(movie):
         redis.hset(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=movie.slug,
             value=movie.model_dump_json(),
         )
+        return movie
+
+    def create_movies(self, movie_in: MovieDescriptionCreate) -> MovieDescription:
+        movie = MovieDescription(
+            **movie_in.model_dump(),
+        )
+        self.save_movies(movie)
         log.info("Создана новая запись с фильмом %s", movie)
         return movie
 
@@ -87,7 +91,7 @@ class MoviesStorage(BaseModel):
     ) -> MovieDescription:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
-        self.slug_to_movies[movie.slug] = movie
+        self.save_movies(movie)
         log.info("Изменена запись с фильмом %s", movie)
         return movie
 
@@ -98,7 +102,7 @@ class MoviesStorage(BaseModel):
     ) -> MovieDescription:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
-        self.slug_to_movies[movie.slug] = movie
+        self.save_movies(movie)
         log.info("Частично изменена запись с фильмом %s", movie)
         return movie
 
