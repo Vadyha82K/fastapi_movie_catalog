@@ -55,13 +55,13 @@ class MoviesStorage(BaseModel):
         return list(self.slug_to_movies.values())
 
     def get_movies_by_slug(self, slug: str) -> MovieDescription | None:
-        result = self.slug_to_movies.get(slug)
-        if result:
-            return result
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Movie {slug} not found",
+        result = redis.hget(
+            name=config.REDIS_MOVIES_HASH_NAME,
+            key=slug,
         )
+        if result:
+            movie = MovieDescription.model_validate_json(result)
+            return movie
 
     def create_movies(self, movie_in: MovieDescriptionCreate) -> MovieDescription:
         movie = MovieDescription(
