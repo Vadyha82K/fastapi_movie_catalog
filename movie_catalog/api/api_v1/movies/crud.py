@@ -52,9 +52,13 @@ class MoviesStorage(BaseModel):
         )
 
     def get_list_movies(self) -> list[MovieDescription]:
-        return list(self.slug_to_movies.values())
+        return [
+            MovieDescription.model_validate_json(value)
+            for value in redis.hvals(name=config.REDIS_MOVIES_HASH_NAME)
+        ]
 
-    def get_movies_by_slug(self, slug: str) -> MovieDescription | None:
+    @staticmethod
+    def get_movies_by_slug(slug: str) -> MovieDescription | None:
         result = redis.hget(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=slug,
@@ -63,7 +67,8 @@ class MoviesStorage(BaseModel):
             movie = MovieDescription.model_validate_json(result)
             return movie
 
-    def create_movies(self, movie_in: MovieDescriptionCreate) -> MovieDescription:
+    @staticmethod
+    def create_movies(movie_in: MovieDescriptionCreate) -> MovieDescription:
         movie = MovieDescription(
             **movie_in.model_dump(),
         )
