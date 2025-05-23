@@ -21,6 +21,18 @@ redis = Redis(
 )
 
 
+class MovieBaseError(Exception):
+    """
+    Базовое исключение для действий с фильмами в CRUD.
+    """
+
+
+class MovieAlreadyExistsError(MovieBaseError):
+    """
+    Вызывается при создании фильма, если такой фильм уже существует.
+    """
+
+
 class MoviesStorage(BaseModel):
 
     @staticmethod
@@ -39,6 +51,21 @@ class MoviesStorage(BaseModel):
         if result:
             movie = MovieDescription.model_validate_json(result)
             return movie
+
+    @staticmethod
+    def exists(slug: str) -> bool:
+        return redis.hexists(
+            config.REDIS_MOVIES_HASH_NAME,
+            key=slug,
+        )
+
+    def create_or_raise_if_exists(
+        self,
+        movie_description_create: MovieDescriptionCreate,
+    ):
+        if not self.exists(movie_description_create.slug):
+            return self.create_movies(movie_description_create)
+        raise MovieAlreadyExistsError(movie_description_create.slug)
 
     @staticmethod
     def save_movies(movie):
