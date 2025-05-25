@@ -19,6 +19,13 @@ class AbstractTokensHelper(ABC):
         """
 
     @abstractmethod
+    def get_tokens(self) -> list[str]:
+        """
+         Выводит все токены
+        :return:
+        """
+
+    @abstractmethod
     def add_token_in_storage(
         self,
         token: str,

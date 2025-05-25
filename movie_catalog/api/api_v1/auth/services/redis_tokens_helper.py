@@ -32,6 +32,12 @@ class RedisTokensHelper(AbstractTokensHelper):
             )
         )
 
+    def get_tokens(self) -> list[str]:
+        """
+        Выводит список токенов
+        """
+        return list(self.redis.smembers(self.tokens_set))
+
     def add_token_in_storage(
         self,
         token: str,
