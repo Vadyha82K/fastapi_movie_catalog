@@ -47,7 +47,7 @@ class RedisTokensHelper(AbstractTokensHelper):
             token,
         )
 
-    def delete_token(self, token: str):
+    def delete_token(self, token: str) -> None:
         if self.token_exists(token=token):
             self.redis.srem(self.tokens_set, token)
 

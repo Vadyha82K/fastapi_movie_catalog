@@ -25,7 +25,10 @@ app.include_router(api_router)
 
 
 @app.get("/")
-def read_root(request: Request, name: str = "Guest"):
+def read_root(
+    request: Request,
+    name: str = "Guest",
+) -> dict[str, str]:
     docs_url = request.url.replace(
         path="/docs",
         query="",

@@ -55,7 +55,7 @@ def get_movie_description(
 def update(
     movie: MovieDescriptionBySlug,
     movie_in: MovieDescriptionUpdate,
-):
+) -> MovieDescription:
     return storage.update(
         movie=movie,
         movie_in=movie_in,

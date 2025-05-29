@@ -63,12 +63,12 @@ def prefetch_movie(movie_slug: str) -> MovieDescription:
 
 def validate_basic_auth(
     credentials: HTTPBasicCredentials,
-):
+) -> None:
     if redis_users.validate_user_password(
         username=credentials.username,
         password=credentials.password,
     ):
-        return
+        return None
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -79,11 +79,11 @@ def validate_basic_auth(
 
 def validate_api_token(
     api_token: HTTPAuthorizationCredentials,
-):
+) -> None:
     if redis_tokens.token_exists(
         api_token.credentials,
     ):
-        return
+        return None
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -104,7 +104,7 @@ def user_basic_auth_or_api_token_required_for_unsafe_methods(
 ) -> None:
 
     if request.method not in UNSAFE_METHODS:
-        return
+        return None
 
     if credentials:
         return validate_basic_auth(credentials=credentials)

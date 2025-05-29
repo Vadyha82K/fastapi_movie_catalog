@@ -1,4 +1,7 @@
+__all__ = ("storage",)
+
 import logging
+from typing import cast
 
 from pydantic import BaseModel
 from redis import Redis
@@ -56,21 +59,24 @@ class MoviesStorage(BaseModel):
 
     @staticmethod
     def exists(slug: str) -> bool:
-        return redis.hexists(
-            config.REDIS_MOVIES_HASH_NAME,
-            key=slug,
+        return cast(
+            bool,
+            redis.hexists(
+                config.REDIS_MOVIES_HASH_NAME,
+                key=slug,
+            ),
         )
 
     def create_or_raise_if_exists(
         self,
         movie_description_create: MovieDescriptionCreate,
-    ):
+    ) -> MovieDescription:
         if not self.exists(movie_description_create.slug):
             return self.create_movies(movie_description_create)
         raise MovieAlreadyExistsError(movie_description_create.slug)
 
     @staticmethod
-    def save_movies(movie):
+    def save_movies(movie: MovieDescription) -> MovieDescription:
         redis.hset(
             name=config.REDIS_MOVIES_HASH_NAME,
             key=movie.slug,
