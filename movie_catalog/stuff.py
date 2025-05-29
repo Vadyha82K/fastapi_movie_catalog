@@ -23,7 +23,7 @@ def main() -> None:
     c = add(a, b)
     print(c)
     print("type c:", type(c))
-    reveal_type(c)
+    # reveal_type(c)
     print(r.ping())
     r.set("first_name", "Vadim")
     r.set("last_name", "Konovalov")
