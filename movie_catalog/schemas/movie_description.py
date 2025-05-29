@@ -30,7 +30,7 @@ class MovieDescriptionUpdate(BaseModel):
     release_year: Annotated[int, Form()]
 
 
-class MovieDescriptionPartialUpdate(MovieDescriptionBase):
+class MovieDescriptionPartialUpdate(BaseModel):
     """
     Модель частичного обновления описания фильмов
     """

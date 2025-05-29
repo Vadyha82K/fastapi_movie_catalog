@@ -52,6 +52,8 @@ class MoviesStorage(BaseModel):
             movie = MovieDescription.model_validate_json(result)
             return movie
 
+        return None
+
     @staticmethod
     def exists(slug: str) -> bool:
         return redis.hexists(
