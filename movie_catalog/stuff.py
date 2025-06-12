@@ -1,9 +1,7 @@
-from typing import reveal_type
 
 from redis import Redis
 
 from core import config
-
 
 r = Redis(
     host=config.REDIS_HOST,

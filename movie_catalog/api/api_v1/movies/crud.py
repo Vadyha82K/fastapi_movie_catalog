@@ -10,8 +10,8 @@ from core import config
 from schemas.movie_description import (
     MovieDescription,
     MovieDescriptionCreate,
-    MovieDescriptionUpdate,
     MovieDescriptionPartialUpdate,
+    MovieDescriptionUpdate,
 )
 
 log = logging.getLogger(__name__)

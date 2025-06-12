@@ -1,9 +1,8 @@
 from typing import Annotated
 
 from fastapi import (
-    Depends,
     APIRouter,
-    BackgroundTasks,
+    Depends,
 )
 from starlette import status
 
@@ -11,9 +10,9 @@ from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import prefetch_movie
 from schemas.movie_description import (
     MovieDescription,
-    MovieDescriptionUpdate,
     MovieDescriptionPartialUpdate,
     MovieDescriptionRead,
+    MovieDescriptionUpdate,
 )
 
 MovieDescriptionBySlug = Annotated[

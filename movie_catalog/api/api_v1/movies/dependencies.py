@@ -2,27 +2,25 @@ import logging
 from typing import Annotated
 
 from fastapi import (
-    HTTPException,
-    BackgroundTasks,
-    status,
-    Request,
     Depends,
+    HTTPException,
+    Request,
+    status,
 )
 from fastapi.security import (
-    HTTPBearer,
     HTTPAuthorizationCredentials,
     HTTPBasic,
     HTTPBasicCredentials,
+    HTTPBearer,
 )
 from starlette.status import HTTP_401_UNAUTHORIZED
 
-from api.api_v1.movies.crud import storage
 from api.api_v1.auth.services import (
     redis_tokens,
     redis_users,
 )
+from api.api_v1.movies.crud import storage
 from schemas.movie_description import MovieDescription
-
 
 log = logging.getLogger(__name__)
 

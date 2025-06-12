@@ -8,8 +8,8 @@ from fastapi import (
 from api import router as api_router
 from app_lifespan import lifespan
 from core.config import (
-    LOG_LEVEL,
     LOG_FORMAT,
+    LOG_LEVEL,
 )
 
 logging.basicConfig(

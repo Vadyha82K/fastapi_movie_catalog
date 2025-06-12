@@ -1,11 +1,11 @@
 from fastapi import (
     APIRouter,
-    status,
     Depends,
     HTTPException,
+    status,
 )
 
-from api.api_v1.movies.crud import storage, MovieAlreadyExistsError
+from api.api_v1.movies.crud import MovieAlreadyExistsError, storage
 from api.api_v1.movies.dependencies import (
     user_basic_auth_or_api_token_required_for_unsafe_methods,
 )
