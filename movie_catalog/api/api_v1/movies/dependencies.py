@@ -30,7 +30,7 @@ UNSAFE_METHODS = frozenset(
         "PUT",
         "PATCH",
         "DELETE",
-    }
+    },
 )
 
 
@@ -66,7 +66,7 @@ def validate_basic_auth(
         username=credentials.username,
         password=credentials.password,
     ):
-        return None
+        return
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -81,7 +81,7 @@ def validate_api_token(
     if redis_tokens.token_exists(
         api_token.credentials,
     ):
-        return None
+        return
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

@@ -52,8 +52,7 @@ class MoviesStorage(BaseModel):
             key=slug,
         )
         if result:
-            movie = MovieDescription.model_validate_json(result)
-            return movie
+            return MovieDescription.model_validate_json(result)
 
         return None
 

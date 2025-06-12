@@ -29,7 +29,7 @@ class RedisTokensHelper(AbstractTokensHelper):
             self.redis.sismember(
                 self.tokens_set,
                 token,
-            )
+            ),
         )
 
     def get_tokens(self) -> list[str]:
