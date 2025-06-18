@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from annotated_types import Len
 from fastapi import Form
 from pydantic import BaseModel
 
@@ -16,7 +17,10 @@ class MovieDescriptionCreate(MovieDescriptionBase):
     Модель создания описания фильмов
     """
 
-    slug: Annotated[str, Form()]
+    slug: Annotated[
+        str,
+        Len(min_length=3, max_length=15),
+    ]
 
 
 class MovieDescriptionUpdate(BaseModel):

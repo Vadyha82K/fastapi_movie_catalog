@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from pydantic import ValidationError
+
 from schemas.movie_description import (
     MovieDescription,
     MovieDescriptionCreate,
@@ -150,4 +152,36 @@ class MovieDescriptionUpdateTestCase(TestCase):
         self.assertEqual(
             movies_in.release_year,
             movies.release_year,
+        )
+
+    def test_movie_description_checking_for_small_slug_length(self) -> None:
+        with self.assertRaisesRegex(
+            ValidationError,
+            expected_regex="String should have at least 3 characters",
+        ):
+            MovieDescriptionCreate(
+                slug="so",
+                title="some-title",
+                description="some-description",
+                genre=["some-genre", "some-genre"],
+                release_year=2025,
+            )
+
+    def test_movie_description_checking_for_a_longer_slug_length(self) -> None:
+        with self.assertRaises(
+            ValidationError,
+        ) as exc_info:
+            MovieDescriptionCreate(
+                slug="some slug" * 4,
+                title="some-title",
+                description="some-description",
+                genre=["some-genre", "some-genre"],
+                release_year=2025,
+            )
+        errors_details = exc_info.exception.errors()[0]
+        expected_type = "string_too_long"
+
+        self.assertEqual(
+            expected_type,
+            errors_details["type"],
         )
