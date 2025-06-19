@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,7 +17,14 @@ USERS_DB = {
 }
 
 REDIS_HOST = "localhost"
-REDIS_PORT = 6372
+REDIS_PORT = (
+    int(
+        getenv(
+            "REDIS_PORT",
+            "6372",
+        ),
+    ),
+)
 
 REDIS_DB = 0
 REDIS_DB_TOKENS = 1

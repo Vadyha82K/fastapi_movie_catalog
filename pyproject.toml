@@ -24,6 +24,8 @@ plugins = [
     "pydantic.mypy",
 ]
 
+
+
 # ruff Settings
 [tool.ruff]
 required-version = ">=0.11.13"
