@@ -19,7 +19,9 @@ if getenv("TESTING") != "1":
 
 def create_movies() -> MovieDescription:
     movie_in = MovieDescriptionCreate(
-        slug="".join(random.choices(ascii_letters, k=8)),  # noqa: S311
+        slug="".join(
+            random.choices(ascii_letters, k=8),  # noqa: S311
+        ),
         title="some title",
         description="some description",
         genre=["some genre", "some genre"],
