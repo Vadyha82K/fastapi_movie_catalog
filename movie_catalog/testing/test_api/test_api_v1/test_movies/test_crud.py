@@ -1,10 +1,7 @@
 import random
-from os import getenv
 from string import ascii_letters
 from typing import ClassVar
 from unittest import TestCase
-
-import pytest
 
 from api.api_v1.movies.crud import storage
 from schemas.movie_description import (
@@ -14,16 +11,10 @@ from schemas.movie_description import (
     MovieDescriptionUpdate,
 )
 
-if getenv("TESTING") != "1":
-    error_message = "Environment is not ready for testing"
-    raise pytest.exit(error_message)
-
 
 def create_movies() -> MovieDescription:
     movie_in = MovieDescriptionCreate(
-        slug="".join(
-            random.choices(ascii_letters, k=8),  # noqa: S311
-        ),
+        slug="".join(random.choices(ascii_letters, k=8)),  # noqa: S311
         title="some title",
         description="some description",
         genre=["some genre", "some genre"],
