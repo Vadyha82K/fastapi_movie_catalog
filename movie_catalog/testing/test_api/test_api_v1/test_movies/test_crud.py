@@ -4,6 +4,8 @@ from string import ascii_letters
 from typing import ClassVar
 from unittest import TestCase
 
+import pytest
+
 from api.api_v1.movies.crud import storage
 from schemas.movie_description import (
     MovieDescription,
@@ -14,7 +16,7 @@ from schemas.movie_description import (
 
 if getenv("TESTING") != "1":
     error_message = "Environment is not ready for testing"
-    raise OSError(error_message)
+    raise pytest.exit(error_message)
 
 
 def create_movies() -> MovieDescription:
