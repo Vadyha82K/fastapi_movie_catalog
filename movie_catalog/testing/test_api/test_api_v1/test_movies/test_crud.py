@@ -1,4 +1,5 @@
 import random
+from collections.abc import Generator
 from string import ascii_letters
 from typing import ClassVar
 from unittest import TestCase
@@ -29,8 +30,10 @@ def create_movie() -> MovieDescription:
 
 
 @pytest.fixture
-def movies() -> MovieDescription:
-    return create_movie()
+def movies() -> Generator[MovieDescription]:
+    movies = create_movie()
+    yield movies
+    storage.delete(movies)
 
 
 class MovieDescriptionUpdateTestCase(TestCase):
@@ -92,9 +95,9 @@ class MovieDescriptionUpdateGetMoviesTestCase(TestCase):
             storage.delete(movie)
 
     def test_get_list(self) -> None:
-        movies = storage.get_list_movies()
+        movies_desc = storage.get_list_movies()
         expected_slug = {mov.slug for mov in self.movies}
-        slugs = {mov.slug for mov in movies}
+        slugs = {mov.slug for mov in movies_desc}
         expected_diff = set[str]()
         diff = expected_slug - slugs
         self.assertEqual(expected_diff, diff)
