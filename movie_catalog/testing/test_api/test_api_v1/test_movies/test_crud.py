@@ -28,6 +28,11 @@ def create_movie() -> MovieDescription:
     return storage.create_movies(movie_in)
 
 
+@pytest.fixture
+def movies() -> MovieDescription:
+    return create_movie()
+
+
 class MovieDescriptionUpdateTestCase(TestCase):
     def setUp(self) -> None:
         self.movies = create_movie()
@@ -90,10 +95,9 @@ class MovieDescriptionUpdateGetMoviesTestCase(TestCase):
         movies = storage.get_list_movies()
         expected_slug = {mov.slug for mov in self.movies}
         slugs = {mov.slug for mov in movies}
-        self.assertEqual(
-            expected_slug,
-            slugs,
-        )
+        expected_diff = set[str]()
+        diff = expected_slug - slugs
+        self.assertEqual(expected_diff, diff)
 
     def test_get_by_slug(self) -> None:
         for movie in self.movies:
@@ -108,9 +112,8 @@ class MovieDescriptionUpdateGetMoviesTestCase(TestCase):
                 )
 
 
-def test_create_or_raise_if_exists() -> None:
-    existing_movies = create_movie()
-    movies_create = MovieDescriptionCreate(**existing_movies.model_dump())
+def test_create_or_raise_if_exists(movies: MovieDescription) -> None:
+    movies_create = MovieDescriptionCreate(**movies.model_dump())
     with pytest.raises(
         MovieAlreadyExistsError,
         match=movies_create.slug,
