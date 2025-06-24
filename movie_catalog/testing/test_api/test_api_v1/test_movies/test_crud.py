@@ -3,7 +3,12 @@ from string import ascii_letters
 from typing import ClassVar
 from unittest import TestCase
 
-from api.api_v1.movies.crud import storage
+import pytest
+
+from api.api_v1.movies.crud import (
+    MovieAlreadyExistsError,
+    storage,
+)
 from schemas.movie_description import (
     MovieDescription,
     MovieDescriptionCreate,
@@ -12,7 +17,7 @@ from schemas.movie_description import (
 )
 
 
-def create_movies() -> MovieDescription:
+def create_movie() -> MovieDescription:
     movie_in = MovieDescriptionCreate(
         slug="".join(random.choices(ascii_letters, k=8)),  # noqa: S311
         title="some title",
@@ -25,7 +30,7 @@ def create_movies() -> MovieDescription:
 
 class MovieDescriptionUpdateTestCase(TestCase):
     def setUp(self) -> None:
-        self.movies = create_movies()
+        self.movies = create_movie()
 
     def tearDown(self) -> None:
         storage.delete(self.movies)
@@ -74,7 +79,7 @@ class MovieDescriptionUpdateGetMoviesTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.movies = [create_movies() for _ in range(cls.MOVIES_COUNTS)]
+        cls.movies = [create_movie() for _ in range(cls.MOVIES_COUNTS)]
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -101,3 +106,14 @@ class MovieDescriptionUpdateGetMoviesTestCase(TestCase):
                     movie,
                     db_movies,
                 )
+
+
+def test_create_or_raise_if_exists() -> None:
+    existing_movies = create_movie()
+    movies_create = MovieDescriptionCreate(**existing_movies.model_dump())
+    with pytest.raises(
+        MovieAlreadyExistsError,
+        match=movies_create.slug,
+    ) as exc_info:
+        storage.create_or_raise_if_exists(movies_create)
+    assert exc_info.value.args[0] == movies_create.slug
